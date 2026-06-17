@@ -1,5 +1,5 @@
 
-(function() {
+(function () {
     if (window._muGui) return;
     const gui = document.createElement('div');
     gui.id = 'mu-gui';
@@ -91,8 +91,17 @@
             const minDelay = (parseInt(document.getElementById('mu-min').value) || 15) * 1000;
             const maxDelay = (parseInt(document.getElementById('mu-max').value) || 25) * 1000;
 
-            const selectBtn = findBtn('select');
-            if (selectBtn) { selectBtn.click(); await wait(2000, 3500); }
+            let isSelectMode = findBtn('cancel');
+            if (!isSelectMode) {
+                const selectBtn = findBtn('select');
+                if (selectBtn) { selectBtn.click(); await wait(2000, 3500); }
+                isSelectMode = findBtn('cancel');
+            }
+            if (!isSelectMode) {
+                setStatus('Waiting for select mode...');
+                await wait(2000, 3000);
+                continue;
+            }
 
             const images = Array.from(document.querySelectorAll('img')).filter(img => img.width > 50 || img.height > 50);
             let selectedCount = 0;
@@ -144,9 +153,8 @@
 
             totalUnliked += selectedCount;
             const delayMs = Math.floor(Math.random() * (maxDelay - minDelay + 1) + minDelay);
-            setStatus(`Unliked ${totalUnliked}. Delaying ${Math.round(delayMs/1000)}s...`);
+            setStatus(`Unliked ${totalUnliked}. Delaying ${Math.round(delayMs / 1000)}s...`);
             await wait(delayMs, delayMs);
         }
     }
 })();
-            
