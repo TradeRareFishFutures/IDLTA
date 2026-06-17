@@ -46,5 +46,6 @@ You can customize the script's behavior in the panel:
 
 ## ⚠️ USE THIS AT YOUR OWN RISK! ⚠️
 This tool is meant for personal use at small scale. Unliking too many posts at once or having the delay too low may get you ratelimited, banned, shadowbanned, or otherwise.
+
 I have implemented a very rudimentary fail-safe that will reload the page (which stops the script from running) when there is an abnormally long loading time, which is a sign of ratelimiting.
 #### I am not affiliated with or endorsed by Instagram or Meta.
