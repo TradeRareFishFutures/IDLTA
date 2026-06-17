@@ -1,7 +1,7 @@
 <div align="center">
   <h1>💔 IDLTA</h1>
   <p><b>I Don't Like That Anymore</b></p>
-  **Want to remove your likes on Instagram? Hide your embarrassing likes!** IDLTA is a very simple userscript. 
+  <b>Want to remove your likes on Instagram? Hide your embarrassing likes!</b> IDLTA is a very simple userscript. 
 </div>
 
 ---
