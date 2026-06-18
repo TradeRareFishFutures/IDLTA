@@ -1,8 +1,23 @@
 
+// ==UserScript==
+// @name         Instagram Mass Unliker
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Automate Instagram unlikes
+// @match        *://*.instagram.com/*
+// @grant        none
+// ==/UserScript==
+
 (function () {
+
+    // ui made by gemini
+
     if (window._muGui) return;
     const gui = document.createElement('div');
     gui.id = 'mu-gui';
+    const style = document.createElement('style');
+    style.innerHTML = '#mu-gui input[type=number]::-webkit-inner-spin-button, #mu-gui input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; } #mu-gui input[type=number] { -moz-appearance: textfield; }';
+    gui.appendChild(style);
     gui.style.cssText = 'position:fixed;top:20px;left:20px;width:280px;background:#1e1e1e;color:#fff;border:1px solid #333;border-radius:8px;z-index:999999;font-family:sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.5);overflow:hidden;';
     const header = document.createElement('div');
     header.style.cssText = 'background:linear-gradient(45deg,#833ab4,#fd1d1d,#fcb045);padding:10px;cursor:move;font-weight:bold;text-align:center;user-select:none;';
@@ -48,19 +63,29 @@
         if (isDragging) { e.preventDefault(); currentX = e.clientX - initialX; currentY = e.clientY - initialY; xOffset = currentX; yOffset = currentY; gui.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`; }
     };
 
-    let isRunning = false;
-    let totalUnliked = 0;
+    let isRunning = sessionStorage.getItem('mu_isRunning') === 'true';
+    let totalUnliked = parseInt(sessionStorage.getItem('mu_totalUnliked')) || 0;
     const btn = document.getElementById('mu-btn');
     const status = document.getElementById('mu-status');
     const totalStatus = document.getElementById('mu-total');
 
-    const setStatus = t => { status.innerText = 'Status: ' + t; console.log(t); };
-    const setTotal = () => { totalStatus.innerText = 'Total Unliked: ' + totalUnliked; };
+    if (totalUnliked > 0) {
+        totalStatus.innerText = 'Total Unliked: ' + totalUnliked;
+    }
+
+    const setStatus = t => { status.innerText = 'Status: ' + t; };
+    const setTotal = () => {
+        totalStatus.innerText = 'Total Unliked: ' + totalUnliked;
+        sessionStorage.setItem('mu_totalUnliked', totalUnliked);
+    };
     btn.onclick = () => {
         isRunning = !isRunning;
+        sessionStorage.setItem('mu_isRunning', isRunning);
         if (isRunning) { btn.innerText = 'STOP'; btn.style.background = '#e74c3c'; runUnliker(); }
         else { btn.innerText = 'START'; btn.style.background = '#2ecc71'; setStatus('Stopped by user'); }
     };
+
+
 
     const wait = (min, max) => new Promise(r => setTimeout(r, Math.floor(Math.random() * (max - min + 1) + min)));
     const isVisible = el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height > 0;
@@ -97,9 +122,15 @@
 
     const isModalOpen = () => document.body.innerText.toLowerCase().includes('unlike posts?');
 
-    async function runUnliker() {
-        setStatus('Running...');
+    async function runUnliker(isAutoStart = false) {
+        if (isAutoStart) {
+            setStatus('Starting (waiting for page)...');
+            await wait(3000, 4000);
+        }
+        let selectFailCount = 0;
+
         while (isRunning) {
+            setStatus('Running loop...');
             const batchSize = parseInt(document.getElementById('mu-batch').value) || 10;
             const minDelay = (parseInt(document.getElementById('mu-min').value) || 15) * 1000;
             const maxDelay = (parseInt(document.getElementById('mu-max').value) || 25) * 1000;
@@ -114,10 +145,21 @@
                 isSelectMode = findBtn('cancel');
             }
             if (!isSelectMode) {
+                if (await checkLimit()) continue;
+                selectFailCount++;
+                if (selectFailCount > 3) {
+                    setStatus(`Select stuck. Reloading in ${Math.round(reloadDelay / 1000)}s...`);
+                    await wait(reloadDelay, reloadDelay);
+                    window.location.href = 'https://www.instagram.com/your_activity/interactions/likes/';
+                    await wait(10000, 14000);
+                    selectFailCount = 0;
+                    continue;
+                }
                 setStatus('Waiting for select mode...');
                 await wait(2000, 3000);
                 continue;
             }
+            selectFailCount = 0;
 
             const images = Array.from(document.querySelectorAll('img')).filter(img => img.width > 50 || img.height > 50);
             let selectedCount = 0;
@@ -135,7 +177,7 @@
                 await wait(4000, 6000);
                 const newCount = Array.from(document.querySelectorAll('img')).filter(img => img.width > 50 || img.height > 50).length;
                 if (newCount === images.length) {
-                    setStatus(`Stalled. Reloading in ${Math.round(reloadDelay/1000)}s...`);
+                    setStatus(`Stalled. Reloading in ${Math.round(reloadDelay / 1000)}s...`);
                     await wait(reloadDelay, reloadDelay);
                     window.location.href = 'https://www.instagram.com/your_activity/interactions/likes/';
                     await wait(10000, 14000);
@@ -174,5 +216,10 @@
             setStatus(`Unliked batch of ${selectedCount}. Delaying ${Math.round(delayMs / 1000)}s...`);
             await wait(delayMs, delayMs);
         }
+    }
+
+    if (isRunning) {
+        btn.innerText = 'STOP'; btn.style.background = '#e74c3c';
+        runUnliker(true);
     }
 })();
