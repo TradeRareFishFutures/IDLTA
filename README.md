@@ -1,7 +1,7 @@
 <div align="center">
   <h1>💔 IDLTA</h1>
   <p><b>I Don't Like That Anymore</b></p>
-  <b>Want to remove your likes on Instagram? Hide your embarrassing likes!</b> IDLTA is a very simple userscript. 
+  <b>Want to remove your likes on Instagram? Hide your embarrassing likes!</b>
 </div>
 
 ---
@@ -19,16 +19,29 @@
 
 ---
 
-## Usage
+## Manual Usage (Dev-Console)
 
 1. Go to Instagram on your desktop browser.
 2. Navigate to your Likes page:
    - Go to **Menu &gt; Your Activity &gt; Interactions &gt; Likes**
-   - Or click this direct link* [instagram.com/your_activity/interactions/likes/](https://www.instagram.com/your_activity/interactions/likes/)
+   - [Or click this link](https://www.instagram.com/your_activity/interactions/likes/)
 3. Open your browser's inspect element or adjacent and navigate to 'console'
 4. **Copy** the entire contents of `unlike.js`.
 5. **Paste** the code into the console and press **Enter**.
 6. Adjust settings to your liking (depending on internet speed, risk level, etc)
+
+## Automated Usage (Tampermonkey)
+
+1. Ensure you have the [Tampermonkey](https://www.tampermonkey.net) extension installed.
+2. Click the extension icon on your extension tray and click `Create a new script...`
+3. Replace the contents of the default script with the contents of `idlta.js` and press `Ctrl+S`
+4. Navigate to your Likes page:
+   - Go to **Menu &gt; Your Activity &gt; Interactions &gt; Likes**
+   - [Or click this link](https://www.instagram.com/your_activity/interactions/likes/)
+5. Ensure it has permissions by clicking it again while on the Instagram webpage and giving it access if needed
+6. Adjust settings to your liking (depending on internet speed, risk level, etc) and click start
+
+⚠️ This option may be riskier! It will automatically resume the script when the page reloads.
 
 ---
 
