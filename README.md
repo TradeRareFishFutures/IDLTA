@@ -8,7 +8,7 @@
 
 <div align="center">
   
-<img width="295" height="251" alt="image" src="https://github.com/user-attachments/assets/b6961e48-6b3b-4ccc-b5ab-d7cb862a8d51" />
+<img width="298" height="352" alt="image" src="https://github.com/user-attachments/assets/7f361af8-7558-40fd-bbde-9f7f1c4ba534" />
 
   
 <h3>⚠️<b>WARNING:</b> This might be against Instagram/Meta's TOS! I didn't read it so I don't know, and don't care. </h3>
@@ -38,9 +38,12 @@ You can customize the script's behavior in the panel:
 
 | Setting | Description | Default |
 | --- | --- | --- |
-| **Batch Size** | How many posts to select and unlike at once before resting. | `10` |
-| **Min Delay (s)** | The minimum wait time between batches. | `15` |
-| **Max Delay (s)** | The maximum wait time between batches. | `25` |
+| **Batch Size** | Number of posts to unlike | `10` |
+| **Batch Delay (s)** | Min-max wait time between batches | `15 - 25` |
+| **Click Delay (ms)** | Min-max wait time between selection click | `400 - 1200` |
+| **Reload Timeout (s)** | How long to wait before reloading when the feed stalls | `15` |
+
+### These values are essentially the farthest you can go without being ratelimited immedietly. All but the batch size are the most extreme it would let me do it consistently, and batch size just increases how long the site takes to reload.
 
 ---
 
