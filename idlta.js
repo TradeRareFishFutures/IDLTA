@@ -14,18 +14,29 @@
     const i1 = document.createElement('input'); i1.type = 'number'; i1.id = 'mu-batch'; i1.value = '10'; i1.min = '1'; i1.max = '50'; i1.style.cssText = 'width:60px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;padding:2px 5px;';
     l1.appendChild(i1);
 
-    const l2 = document.createElement('label'); l2.style.cssText = 'display:flex;justify-content:space-between;font-size:13px;'; l2.innerText = 'Min Delay (s): ';
-    const i2 = document.createElement('input'); i2.type = 'number'; i2.id = 'mu-min'; i2.value = '15'; i2.style.cssText = 'width:60px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;padding:2px 5px;';
-    l2.appendChild(i2);
+    const l2 = document.createElement('label'); l2.style.cssText = 'display:flex;align-items:center;justify-content:space-between;font-size:13px;'; l2.innerText = 'Batch Delay (s): ';
+    const l2r = document.createElement('span'); l2r.style.cssText = 'display:flex;align-items:center;gap:4px;';
+    const i2 = document.createElement('input'); i2.type = 'number'; i2.id = 'mu-min'; i2.value = '15'; i2.style.cssText = 'width:45px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;padding:2px 5px;';
+    const l2d = document.createElement('span'); l2d.innerText = '-'; l2d.style.color = '#888';
+    const i3 = document.createElement('input'); i3.type = 'number'; i3.id = 'mu-max'; i3.value = '25'; i3.style.cssText = 'width:45px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;padding:2px 5px;';
+    l2r.appendChild(i2); l2r.appendChild(l2d); l2r.appendChild(i3); l2.appendChild(l2r);
 
-    const l3 = document.createElement('label'); l3.style.cssText = 'display:flex;justify-content:space-between;font-size:13px;'; l3.innerText = 'Max Delay (s): ';
-    const i3 = document.createElement('input'); i3.type = 'number'; i3.id = 'mu-max'; i3.value = '25'; i3.style.cssText = 'width:60px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;padding:2px 5px;';
-    l3.appendChild(i3);
+    const l5 = document.createElement('label'); l5.style.cssText = 'display:flex;align-items:center;justify-content:space-between;font-size:13px;'; l5.innerText = 'Click Delay (ms): ';
+    const l5r = document.createElement('span'); l5r.style.cssText = 'display:flex;align-items:center;gap:4px;';
+    const i5a = document.createElement('input'); i5a.type = 'number'; i5a.id = 'mu-cmin'; i5a.value = '400'; i5a.style.cssText = 'width:45px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;padding:2px 5px;';
+    const l5d = document.createElement('span'); l5d.innerText = '-'; l5d.style.color = '#888';
+    const i5b = document.createElement('input'); i5b.type = 'number'; i5b.id = 'mu-cmax'; i5b.value = '1200'; i5b.style.cssText = 'width:45px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;padding:2px 5px;';
+    l5r.appendChild(i5a); l5r.appendChild(l5d); l5r.appendChild(i5b); l5.appendChild(l5r);
 
-    const st = document.createElement('div'); st.id = 'mu-status'; st.style.cssText = 'font-size:12px;color:#aaa;margin-top:5px;'; st.innerText = 'Status: Idle';
+    const l4 = document.createElement('label'); l4.style.cssText = 'display:flex;justify-content:space-between;font-size:13px;'; l4.innerText = 'Reload Timeout (s): ';
+    const i4 = document.createElement('input'); i4.type = 'number'; i4.id = 'mu-reload'; i4.value = '15'; i4.style.cssText = 'width:60px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;padding:2px 5px;';
+    l4.appendChild(i4);
+
+    const st = document.createElement('div'); st.id = 'mu-status'; st.style.cssText = 'font-size:13px;color:#fcb045;font-weight:bold;margin-top:5px;'; st.innerText = 'Status: Idle';
+    const stTotal = document.createElement('div'); stTotal.id = 'mu-total'; stTotal.style.cssText = 'font-size:13px;color:#fd1d1d;font-weight:bold;margin-top:2px;'; stTotal.innerText = 'Total Unliked: 0';
     const btnMain = document.createElement('button'); btnMain.id = 'mu-btn'; btnMain.style.cssText = 'background:#2ecc71;color:#fff;border:none;padding:8px;border-radius:4px;font-weight:bold;cursor:pointer;margin-top:10px;'; btnMain.innerText = 'START';
 
-    body.appendChild(l1); body.appendChild(l2); body.appendChild(l3); body.appendChild(st); body.appendChild(btnMain);
+    body.appendChild(l1); body.appendChild(l2); body.appendChild(l5); body.appendChild(l4); body.appendChild(st); body.appendChild(stTotal); body.appendChild(btnMain);
     gui.appendChild(body);
     document.body.appendChild(gui);
     window._muGui = gui;
@@ -41,8 +52,10 @@
     let totalUnliked = 0;
     const btn = document.getElementById('mu-btn');
     const status = document.getElementById('mu-status');
+    const totalStatus = document.getElementById('mu-total');
 
     const setStatus = t => { status.innerText = 'Status: ' + t; console.log(t); };
+    const setTotal = () => { totalStatus.innerText = 'Total Unliked: ' + totalUnliked; };
     btn.onclick = () => {
         isRunning = !isRunning;
         if (isRunning) { btn.innerText = 'STOP'; btn.style.background = '#e74c3c'; runUnliker(); }
@@ -90,6 +103,9 @@
             const batchSize = parseInt(document.getElementById('mu-batch').value) || 10;
             const minDelay = (parseInt(document.getElementById('mu-min').value) || 15) * 1000;
             const maxDelay = (parseInt(document.getElementById('mu-max').value) || 25) * 1000;
+            const clickMin = parseInt(document.getElementById('mu-cmin').value) || 400;
+            const clickMax = parseInt(document.getElementById('mu-cmax').value) || 1200;
+            const reloadDelay = (parseInt(document.getElementById('mu-reload').value) || 15) * 1000;
 
             let isSelectMode = findBtn('cancel');
             if (!isSelectMode) {
@@ -110,7 +126,7 @@
                 if (img.dataset.muClicked) continue;
                 img.dataset.muClicked = '1';
                 const wrapper = img.closest('a') || img.closest('[role="button"]') || img.parentElement.parentElement || img;
-                if (wrapper) { wrapper.click(); selectedCount++; await wait(400, 1200); }
+                if (wrapper) { wrapper.click(); selectedCount++; await wait(clickMin, clickMax); }
             }
 
             if (selectedCount === 0) {
@@ -119,7 +135,8 @@
                 await wait(4000, 6000);
                 const newCount = Array.from(document.querySelectorAll('img')).filter(img => img.width > 50 || img.height > 50).length;
                 if (newCount === images.length) {
-                    setStatus('Feed stalled. Reloading likes page...');
+                    setStatus(`Stalled. Reloading in ${Math.round(reloadDelay/1000)}s...`);
+                    await wait(reloadDelay, reloadDelay);
                     window.location.href = 'https://www.instagram.com/your_activity/interactions/likes/';
                     await wait(10000, 14000);
                 }
@@ -152,8 +169,9 @@
             if (await checkLimit()) continue;
 
             totalUnliked += selectedCount;
+            setTotal();
             const delayMs = Math.floor(Math.random() * (maxDelay - minDelay + 1) + minDelay);
-            setStatus(`Unliked ${totalUnliked}. Delaying ${Math.round(delayMs / 1000)}s...`);
+            setStatus(`Unliked batch of ${selectedCount}. Delaying ${Math.round(delayMs / 1000)}s...`);
             await wait(delayMs, delayMs);
         }
     }
